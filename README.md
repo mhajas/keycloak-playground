@@ -2,6 +2,8 @@
 
 Keycloak is an Open Source Identity and Access Management solution for modern Applications and Services.
 
+## Purpose
+
 This repository contains the source code for the various tests of approaches to implement new features.
 The repository is to enable for quicker turnaround of ideas, thus some of the projects inside might be
 obsolete while others very lively.
