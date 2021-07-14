@@ -7,7 +7,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         
-        <keycloak.version>11.0.0-SNAPSHOT</keycloak.version>
+        <keycloak.version>15.0.0-SNAPSHOT</keycloak.version>
+        <version.org.infinispan>11.0.1.Final</version.org.infinispan>
     </properties>
 
     <groupId>org.keycloak.playground</groupId>
@@ -44,6 +45,34 @@
             <version>3.11</version>
             <type>jar</type>
         </dependency>
+
+        <dependency>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-client-hotrod</artifactId>
+            <!--
+            <artifactId>infinispan-remote</artifactId>
+            -->
+        </dependency>
+        <dependency>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-query-dsl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-remote-query-client</artifactId>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-bom</artifactId>
+                <version>${version.org.infinispan}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     
 </project>
