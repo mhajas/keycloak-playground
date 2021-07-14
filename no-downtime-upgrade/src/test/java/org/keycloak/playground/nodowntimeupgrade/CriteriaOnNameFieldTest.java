@@ -16,8 +16,10 @@
  */
 package org.keycloak.playground.nodowntimeupgrade;
 
+import org.junit.Assume;
 import org.keycloak.playground.nodowntimeupgrade.base.model.HasId;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel;
+import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuilder;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuilder.Operator;
@@ -48,6 +50,7 @@ import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V
 public class CriteriaOnNameFieldTest extends AbstractNoDowntimeUpgradeTest {
 
     private static final int INITIAL_COUNT_V1 = 100;
+    private static final int INITIAL_COUNT_V2 = 0;
     private static final int INITIAL_COUNT_V3 = 400;
     private static final int INITIAL_COUNT_V4 = 200;
 
@@ -56,7 +59,7 @@ public class CriteriaOnNameFieldTest extends AbstractNoDowntimeUpgradeTest {
 
     @Before
     public void init() {
-        createInstances(INITIAL_COUNT_V1, INITIAL_COUNT_V3, INITIAL_COUNT_V4);
+        createInstances(INITIAL_COUNT_V1, INITIAL_COUNT_V2, INITIAL_COUNT_V3, INITIAL_COUNT_V4);
     }
 
     @Test
@@ -241,6 +244,8 @@ public class CriteriaOnNameFieldTest extends AbstractNoDowntimeUpgradeTest {
 
     @Test
     public void testFieldIlike() {
+        Assume.assumeFalse("ILIKE operation is not supported on infinispan", isInfinispan);
+
         ModelCriteriaBuilder cb = storageV4.getCriteriaBuilder()
           .compare(NAME, Operator.ILIKE, "odel%");
         assertThat(storageV4.read(cb).collect(Collectors.toList()), hasSize(0));

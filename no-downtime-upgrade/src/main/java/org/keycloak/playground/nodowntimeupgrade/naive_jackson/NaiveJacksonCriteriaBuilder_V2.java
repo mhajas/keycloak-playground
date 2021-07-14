@@ -16,7 +16,9 @@
  */
 package org.keycloak.playground.nodowntimeupgrade.naive_jackson;
 
+import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V2;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3;
+
 import java.util.Map;
 
 import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V2.SearchableFields.CLIENT_SCOPE_ID;
@@ -27,16 +29,15 @@ import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V
  *
  * @author hmlnarik
  */
-public class NaiveJacksonCriteriaBuilder_V3 extends NaiveJacksonCriteriaBuilder<ObjectModel_V3> {
+public class NaiveJacksonCriteriaBuilder_V2 extends NaiveJacksonCriteriaBuilder<ObjectModel_V2> {
 
-    private static final Map<String, TriConsumer<NaiveJacksonCriteriaBuilder<ObjectModel_V3>, Operator, Object>> PREDICATES = NaiveJacksonCriteriaBuilder.basePredicates();
+    private static final Map<String, TriConsumer<NaiveJacksonCriteriaBuilder<ObjectModel_V2>, Operator, Object>> PREDICATES = NaiveJacksonCriteriaBuilder.basePredicates();
     static {
-        PREDICATES.put(NAME,    (o, op, value) -> o.fieldCompare(op, value, ObjectModel_V3::getName));
-        PREDICATES.put(TIMEOUT, (o, op, value) -> o.fieldCompare(op, value, ObjectModel_V3::getTimeout));
-        PREDICATES.put(CLIENT_SCOPE_ID, (o, op, value) -> o.fieldCompare(op, value, ObjectModel_V3::getClientScopeId));
+        PREDICATES.put(NAME,    (o, op, value) -> o.fieldCompare(op, value, ObjectModel_V2::getName));
+        PREDICATES.put(CLIENT_SCOPE_ID, (o, op, value) -> o.fieldCompare(op, value, ObjectModel_V2::getClientScopeId));
     }
 
-    public NaiveJacksonCriteriaBuilder_V3() {
+    public NaiveJacksonCriteriaBuilder_V2() {
         super(PREDICATES);
     }
 

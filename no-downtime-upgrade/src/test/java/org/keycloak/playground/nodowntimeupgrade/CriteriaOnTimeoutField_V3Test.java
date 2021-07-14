@@ -28,6 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -47,6 +49,7 @@ import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V
 public class CriteriaOnTimeoutField_V3Test extends AbstractNoDowntimeUpgradeTest {
 
     private static final int INITIAL_COUNT_V1 = 100;
+    private static final int INITIAL_COUNT_V2 = 0;
     private static final int INITIAL_COUNT_V3 = 400;
     private static final int INITIAL_COUNT_V4 = 200;
 
@@ -55,7 +58,7 @@ public class CriteriaOnTimeoutField_V3Test extends AbstractNoDowntimeUpgradeTest
 
     @Before
     public void init() {
-        createInstances(INITIAL_COUNT_V1, INITIAL_COUNT_V3, INITIAL_COUNT_V4);
+        createInstances(INITIAL_COUNT_V1, INITIAL_COUNT_V2, INITIAL_COUNT_V3, INITIAL_COUNT_V4);
     }
 
     @Test
@@ -104,7 +107,7 @@ public class CriteriaOnTimeoutField_V3Test extends AbstractNoDowntimeUpgradeTest
         ));
         for (ObjectModel_V3 m : objects) {
             VersionUtil_V3.V3_UTIL.assertValid(m);
-            assertThat(m.getTimeout(), not(equals(timeout)));
+            assertThat(m.getTimeout(), not(equalTo(timeout)));
         }
         assertThat(objects.stream().map(HasId::getId).collect(Collectors.toSet()), not(contains(key)));
 

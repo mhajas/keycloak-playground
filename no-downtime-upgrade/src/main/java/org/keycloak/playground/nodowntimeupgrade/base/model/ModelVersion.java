@@ -36,4 +36,8 @@ public enum ModelVersion {
     public int getVersion() {
         return version;
     }
+
+    public static ModelVersion fromVersion(int number) {
+        return ModelVersion.values()[number - 1];
+    }
 }

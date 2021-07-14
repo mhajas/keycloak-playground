@@ -18,6 +18,7 @@ package org.keycloak.playground.nodowntimeupgrade;
 
 import org.keycloak.playground.nodowntimeupgrade.base.model.HasId;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
+import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V2;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.Storage;
@@ -34,7 +35,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.InfinispanVersionedStorage;
+import org.keycloak.playground.nodowntimeupgrade.naive_jackson.AbstractNaiveVersionedJacksonStorage;
+import org.keycloak.playground.nodowntimeupgrade.naive_jackson.NaiveJacksonStorage;
+
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V1.V1_UTIL;
+import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V2.V2_UTIL;
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V3.V3_UTIL;
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V4.V4_UTIL;
 
@@ -52,6 +58,7 @@ import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V4.V4_UTIL;
 public abstract class AbstractNoDowntimeUpgradeTest {
 
     protected Storage<ObjectModel_V1> storageV1;
+    protected Storage<ObjectModel_V2> storageV2;
     protected Storage<ObjectModel_V3> storageV3;
     protected Storage<ObjectModel_V4> storageV4;
 
@@ -59,6 +66,8 @@ public abstract class AbstractNoDowntimeUpgradeTest {
 
     @Parameter(0)
     public VersionedStorage storage;
+    public boolean isNaive;
+    public boolean isInfinispan;
 
     @Parameter(1)
     public Object storageClassName;
@@ -86,15 +95,23 @@ public abstract class AbstractNoDowntimeUpgradeTest {
 
     @Before
     public void initStorage() {
+        isNaive = storage instanceof NaiveJacksonStorage;
+        isInfinispan = storage instanceof InfinispanVersionedStorage;
+
         storage.cleanup();
         storageV1 = storage.getStorageV1();
+        storageV2 = storage.getStorageV2();
         storageV3 = storage.getStorageV3();
         storageV4 = storage.getStorageV4();
     }
 
-    public void createInstances(int countV1, int countV3, int countV4) {
+    public void createInstances(int countV1, int countV2, int countV3, int countV4) {
         for (int i = 0; i < countV1; i ++) {
             storageV1.create(V1_UTIL.newInstance(i));
+        }
+
+        for (int i = 0; i < countV2; i ++) {
+            storageV2.create(V2_UTIL.newInstance(i));
         }
 
         for (int i = 0; i < countV3; i ++) {

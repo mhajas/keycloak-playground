@@ -38,6 +38,13 @@ public interface ObjectModel_V4 extends HasId<String> {
     String getClientScopeId();
     void setClientScopeId(String clientScopeId);
 
+    @Deprecated
+    default Integer getTimeout() {
+        if (getTimeout1() == null) return getTimeout2();
+        if (getTimeout2() == null) return getTimeout1();
+        return Math.min(getTimeout1(), getTimeout2());
+    }
+
     /**
      * Timeout from version {@link ModelVersion#VERSION_3} was split into timeout1
      * and timeout2 to capture two different usages.

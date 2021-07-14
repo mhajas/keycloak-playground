@@ -17,6 +17,7 @@
 package org.keycloak.playground.nodowntimeupgrade.naive_jackson;
 
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
+import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V2;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.Storage;
@@ -32,12 +33,18 @@ public class NaiveJacksonStorage implements VersionedStorage {
 
     private final ConcurrentMap<String, byte[]> store = new ConcurrentHashMap<>();
     protected Storage<ObjectModel_V1> storageV1 = new NaiveJacksonStorage_V1(store);
+    protected Storage<ObjectModel_V2> storageV2 = new NaiveJacksonStorage_V2(store);
     protected Storage<ObjectModel_V3> storageV3 = new NaiveJacksonStorage_V3(store);
     protected Storage<ObjectModel_V4> storageV4 = new NaiveJacksonStorage_V4(store);
 
     @Override
     public Storage<ObjectModel_V1> getStorageV1() {
         return storageV1;
+    }
+
+    @Override
+    public Storage<ObjectModel_V2> getStorageV2() {
+        return storageV2;
     }
 
     @Override

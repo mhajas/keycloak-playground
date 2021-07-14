@@ -45,15 +45,16 @@ import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V4.V4_UTIL;
 public class CompatibilityTest extends AbstractNoDowntimeUpgradeTest {
 
     private static final int INITIAL_COUNT_V1 = 100;
-    private static final int INITIAL_COUNT_V3 = 400;
-    private static final int INITIAL_COUNT_V4 = 200;
+    private static final int INITIAL_COUNT_V2 = 200;
+    private static final int INITIAL_COUNT_V3 = 300;
+    private static final int INITIAL_COUNT_V4 = 400;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void init() {
-        createInstances(INITIAL_COUNT_V1, INITIAL_COUNT_V3, INITIAL_COUNT_V4);
+        createInstances(INITIAL_COUNT_V1, INITIAL_COUNT_V2, INITIAL_COUNT_V3, INITIAL_COUNT_V4);
     }
 
     private static <T extends HasId<String>> void testReadFull(Storage<T> storage, VersionUtil<T> versionUtil) {

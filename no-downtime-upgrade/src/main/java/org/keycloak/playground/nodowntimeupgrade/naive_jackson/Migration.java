@@ -22,6 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import static org.keycloak.playground.nodowntimeupgrade.base.model.Constants.DEFAULT_V3_TIMEOUT;
+import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V2.TEMPLATE_PREFIX;
+
 /**
  *
  * @author hmlnarik
@@ -38,7 +41,7 @@ public class Migration {
     public static ObjectNode migrateTreeFrom1To2(ObjectNode node) {
         JsonNode clientTemplateIdNode = node.path("clientTemplateId");
         if (clientTemplateIdNode != null && clientTemplateIdNode.isTextual()) {
-            node.put("clientScopeId", "template-" + clientTemplateIdNode.asText());
+            node.put("clientScopeId", TEMPLATE_PREFIX + clientTemplateIdNode.asText());
             node.remove("clientTemplateId");
         }
         return node;
@@ -49,6 +52,8 @@ public class Migration {
         if (node2Node != null && node2Node.isTextual()) {
             node.remove("node2");
         }
+        node.put("timeout", DEFAULT_V3_TIMEOUT);
+
         return node;
     }
 

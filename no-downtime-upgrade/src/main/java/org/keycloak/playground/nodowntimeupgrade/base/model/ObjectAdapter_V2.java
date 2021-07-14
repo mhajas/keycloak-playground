@@ -20,14 +20,13 @@ package org.keycloak.playground.nodowntimeupgrade.base.model;
  *
  * @author hmlnarik
  */
-public class ObjectAdapter_V1 implements ObjectModel_V1 {
+public class ObjectAdapter_V2 implements ObjectModel_V2 {
 
     public final String id;
     public String name;
-    public String clientTemplateId;
-    public String node2;
+    public String clientScopeId;
 
-    public ObjectAdapter_V1(String id) {
+    public ObjectAdapter_V2(String id) {
         this.id = id;
     }
 
@@ -48,27 +47,35 @@ public class ObjectAdapter_V1 implements ObjectModel_V1 {
 
     @Override
     public String getClientTemplateId() {
-        return clientTemplateId;
+        return null;
     }
 
     @Override
     public void setClientTemplateId(String clientTemplateId) {
-        this.clientTemplateId = clientTemplateId;
+
+    }
+
+    public String getClientScopeId() {
+        return clientScopeId;
+    }
+
+    public void setClientScopeId(String clientScopeId) {
+        this.clientScopeId = clientScopeId;
     }
 
     @Override
     public String getNode2() {
-        return node2;
+        return null;
     }
 
     @Override
     public void setNode2(String node2) {
-        this.node2 = node2;
+
     }
 
     @Override
     public String toString() {
-        return "ObjectModel_V1Impl{" + "id=" + id + ", name=" + name + ", clientTemplateId=" + clientTemplateId + '}';
+        return "ObjectModel_V2Impl{" + "id=" + id + ", name=" + name + ", clientScopeId=" + clientScopeId + '}';
     }
 
 }

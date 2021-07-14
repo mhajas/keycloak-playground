@@ -17,6 +17,7 @@
 package org.keycloak.playground.nodowntimeupgrade.base.storage;
 
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
+import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V2;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
 
@@ -31,6 +32,13 @@ public interface VersionedStorage {
      * @return
      */
     Storage<ObjectModel_V1> getStorageV1();
+
+    /**
+     * Returns storage that stores records in version 2.
+     * @return
+     */
+    Storage<ObjectModel_V2> getStorageV2();
+
     /**
      * Returns storage that stores records in version 3.
      * @return
@@ -41,6 +49,7 @@ public interface VersionedStorage {
      * @return
      */
     Storage<ObjectModel_V4> getStorageV4();
+
     /**
      * Cleans all the data stored in the database.
      */
