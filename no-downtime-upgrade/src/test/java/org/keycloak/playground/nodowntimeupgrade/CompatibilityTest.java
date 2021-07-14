@@ -45,8 +45,8 @@ import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V4.V4_UTIL;
 public class CompatibilityTest extends AbstractNoDowntimeUpgradeTest {
 
     private static final int INITIAL_COUNT_V1 = 100;
-    private static final int INITIAL_COUNT_V3 = 400;
-    private static final int INITIAL_COUNT_V4 = 200;
+    private static final int INITIAL_COUNT_V3 = 200;
+    private static final int INITIAL_COUNT_V4 = 300;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

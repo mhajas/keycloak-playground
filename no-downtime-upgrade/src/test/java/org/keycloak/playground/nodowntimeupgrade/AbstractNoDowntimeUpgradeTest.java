@@ -55,7 +55,7 @@ public abstract class AbstractNoDowntimeUpgradeTest {
     protected Storage<ObjectModel_V3> storageV3;
     protected Storage<ObjectModel_V4> storageV4;
 
-    private static final Pattern STORAGE_CLASS_REGEX = Pattern.compile(System.getProperty("storageClassRegex", ".*"));
+    private static final Pattern STORAGE_CLASS_REGEX = Pattern.compile(System.getProperty("storageClassRegex", ".*Infinispan.*"));
 
     @Parameter(0)
     public VersionedStorage storage;
