@@ -8,7 +8,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         
         <keycloak.version>15.0.0-SNAPSHOT</keycloak.version>
-        <version.org.infinispan>11.0.1.Final</version.org.infinispan>
+        <version.org.infinispan>12.1.6.Final</version.org.infinispan>
     </properties>
 
     <groupId>org.keycloak.playground</groupId>

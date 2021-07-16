@@ -18,6 +18,7 @@ package org.keycloak.playground.nodowntimeupgrade;
 
 import org.keycloak.playground.nodowntimeupgrade.base.model.HasId;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel;
+import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuilder;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuilder.Operator;
@@ -57,6 +58,13 @@ public class CriteriaOnNameFieldTest extends AbstractNoDowntimeUpgradeTest {
     @Before
     public void init() {
         createInstances(INITIAL_COUNT_V1, INITIAL_COUNT_V3, INITIAL_COUNT_V4);
+    }
+
+    @Test
+    public void test() {
+        List<ObjectModel_V4> result = storageV4.read((ModelCriteriaBuilder) null).collect(Collectors.toList());
+
+        System.out.println(result);
     }
 
     @Test

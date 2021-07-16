@@ -12,16 +12,16 @@ public class InfinispanObjectEntity implements HasId<String> {
     @ProtoDoc("@Field(index = Index.NO, store = Store.YES)")
     public int entityVersion = ModelVersion.VERSION_1.getVersion();
 
-    @ProtoField(number = 2)
+    @ProtoField(number = 2, required = true)
     @ProtoDoc("@Field(store = Store.YES)")
     public String id;
 
     @ProtoField(number = 3)
-    @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
+    @ProtoDoc("@Field(index = Index.NO, store = Store.YES)")
     public String name;
 
     @ProtoField(number = 4)
-    @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
+    @ProtoDoc("@Field(index = Index.NO, store = Store.YES)")
     public String clientTemplateId;
 
     /**
@@ -29,7 +29,7 @@ public class InfinispanObjectEntity implements HasId<String> {
      */
     @Deprecated
     @ProtoField(number = 5)
-    public String node2;
+    public String node2 = "";
 
     public ObjectAdapter_V1 toModel() {
         final ObjectAdapter_V1 res = new ObjectAdapter_V1(id);

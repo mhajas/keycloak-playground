@@ -1,19 +1,23 @@
 package org.keycloak.playground.nodowntimeupgrade.infinispan;
 
-import org.infinispan.client.hotrod.RemoteCache;
-import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.keycloak.playground.nodowntimeupgrade.base.model.ModelVersion;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.Storage;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.VersionedStorage;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.migration.Field;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.migration.MultiVersionMarshaller;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.Getters;
 import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.InfinispanObjectEntity;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.ObjectV1Marshaller;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.v3.ObjectV3Marshaller;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.ObjectV1TagMarshaller;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.Setters;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.v3.ObjectV3TagMarshaller;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.v4.ObjectV4Marshaller;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.v4.ObjectV4TagMarshaller;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import static org.keycloak.playground.nodowntimeupgrade.infinispan.migration.Field.CLIENT_SCOPE_ID;
+import static org.keycloak.playground.nodowntimeupgrade.infinispan.migration.Field.NODE2;
 
 public class InfinispanVersionedStorage implements VersionedStorage {
 
@@ -22,9 +26,9 @@ public class InfinispanVersionedStorage implements VersionedStorage {
     @Override
     public Storage<ObjectModel_V1> getStorageV1() {
 
-        return new InfinispanStorage<>("ObjectModelV1.proto",
+        return new InfinispanStorage<>(
                 InfinispanObjectEntity.class,
-                new ObjectV1Marshaller(),
+                new ObjectV1TagMarshaller(),
                 InfinispanObjectEntity::fromModel,
                 InfinispanObjectEntity::toModel
                 );
@@ -32,9 +36,9 @@ public class InfinispanVersionedStorage implements VersionedStorage {
 
     @Override
     public Storage<ObjectModel_V3> getStorageV3() {
-        return new InfinispanStorage<>("ObjectModelV3.proto",
+        return new InfinispanStorage<>(
                 org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntity.class,
-                new ObjectV3Marshaller(),
+                new ObjectV3TagMarshaller(),
                 org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntity::fromModel,
                 org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntity::toModel
         );
@@ -42,7 +46,12 @@ public class InfinispanVersionedStorage implements VersionedStorage {
 
     @Override
     public Storage<ObjectModel_V4> getStorageV4() {
-        return null;
+        return new InfinispanStorage<>(
+                org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity.class,
+                new ObjectV4TagMarshaller(),
+                org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity::fromModel,
+                org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity::toModel
+        );
     }
 
     @Override

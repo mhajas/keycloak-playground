@@ -2,6 +2,7 @@ package org.keycloak.playground.nodowntimeupgrade.infinispan;
 
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.client.hotrod.Search;
 import org.infinispan.client.hotrod.configuration.ClientIntelligence;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.marshall.MarshallerUtil;
@@ -10,6 +11,7 @@ import org.infinispan.protostream.BaseMarshaller;
 import org.infinispan.protostream.FileDescriptorSource;
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.annotations.ProtoSchemaBuilder;
+import org.infinispan.query.dsl.QueryFactory;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 import org.keycloak.playground.nodowntimeupgrade.base.model.HasId;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuilder;
@@ -22,19 +24,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class InfinispanStorage<ModelType extends HasId<String>, EntityType> implements Storage<ModelType> {
 
     private final RemoteCacheManager remoteCacheManager;
     private final RemoteCache<String, EntityType> messageCache;
-    private final String protoFileName;
     private final Class<EntityType> entityClass;
     private final BaseMarshaller<?> marshaller;
     private final Function<ModelType, EntityType> toEntity;
     private final Function<EntityType, ModelType> toModel;
 
-    public InfinispanStorage(String protoFileName, Class<EntityType> entityClass, BaseMarshaller<?> marshaller, Function<ModelType, EntityType> toEntity, Function<EntityType, ModelType> toModel) {
+    public InfinispanStorage(Class<EntityType> entityClass, BaseMarshaller<?> marshaller, Function<ModelType, EntityType> toEntity, Function<EntityType, ModelType> toModel) {
         ConfigurationBuilder remoteBuilder = new ConfigurationBuilder();
         remoteBuilder.addServer()
                 .host("localhost")
@@ -58,7 +61,6 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
             throw new RuntimeException("Cache '" + InfinispanVersionedStorage.CACHE_NAME + "' not found. Please make sure the server is properly configured");
         }
 
-        this.protoFileName = "infinispan/" + protoFileName;
         this.entityClass = entityClass;
         this.marshaller = marshaller;
         this.toEntity = toEntity;
@@ -88,28 +90,14 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
             throw new RuntimeException("Failed to build protobuf definition from 'Message class'", e);
         }
 
+        ctx.registerMarshaller(marshaller);
+
         // check for definition error for the registered protobuf schemas
         String errors = protoMetadataCache.get(ProtobufMetadataManagerConstants.ERRORS_KEY_SUFFIX);
         if (errors != null) {
             throw new IllegalStateException("Some Protobuf schema files contain errors: " + errors + "\nSchema :\n" + msgSchemaFile);
         }
     }
-
-    private String readResource(String resourcePath) {
-        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
-            InputStreamReader reader = new InputStreamReader(is, "UTF-8");
-            StringWriter writer = new StringWriter();
-            char[] buf = new char[1024];
-            int len;
-            while ((len = reader.read(buf)) != -1) {
-                writer.write(buf, 0, len);
-            }
-            return writer.toString();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to read from resource '" + resourcePath + "'", e);
-        }
-    }
-
 
     @Override
     public String create(ModelType object) {
@@ -134,8 +122,14 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
     }
 
     @Override
-    public Stream read(ModelCriteriaBuilder criteria) {
-        return null;
+    public Stream<ModelType> read(ModelCriteriaBuilder criteria) {
+        QueryFactory queryFactory = Search.getQueryFactory(messageCache);
+
+        String query = "FROM nodowntimeupgrade.InfinispanObjectEntity c"
+                + " WHERE c.name LIKE '%000013%'"
+                + " order by c.id ASC";
+
+        return StreamSupport.stream(queryFactory.<EntityType>create(query).spliterator(), false).map(toModel);
     }
 
     @Override
@@ -155,6 +149,6 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
 
     @Override
     public void write(ModelType object) {
-
+        messageCache.put(object.getId(), toEntity.apply(object));
     }
 }

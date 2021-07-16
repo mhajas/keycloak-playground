@@ -80,7 +80,7 @@ public class VersionUtil_V3 implements VersionUtil<ObjectModel_V3> {
     public static int getTimeoutFromV4(int id) {
         int originalModelIndex = id % INITIAL_INDEX_FACTOR;
         return timeoutOnV4Set(originalModelIndex)
-          ? Math.min(10 - (originalModelIndex % 10), (originalModelIndex + 5) % 10)
+          ? 10 - (originalModelIndex % 10)
           : DEFAULT_V3_TIMEOUT;
     }
 
