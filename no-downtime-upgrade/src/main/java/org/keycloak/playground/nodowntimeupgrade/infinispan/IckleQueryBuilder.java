@@ -32,7 +32,7 @@ public class IckleQueryBuilder implements ModelCriteriaBuilder {
             return o.toString();
         }
 
-        throw new IllegalArgumentException("Wrong argument of type " + o.getClass().getName())
+        throw new IllegalArgumentException("Wrong argument of type " + o.getClass().getName());
     }
 
     public static BiFunction<String, Object, String> functionForOperator(String op) {

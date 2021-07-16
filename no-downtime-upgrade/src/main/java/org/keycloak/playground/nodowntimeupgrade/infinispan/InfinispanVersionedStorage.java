@@ -1,23 +1,15 @@
 package org.keycloak.playground.nodowntimeupgrade.infinispan;
 
-import org.keycloak.playground.nodowntimeupgrade.base.model.ModelVersion;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.Storage;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.VersionedStorage;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.migration.Field;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.migration.MultiVersionMarshaller;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.Getters;
 import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.InfinispanObjectEntity;
 import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.ObjectV1TagMarshaller;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.Setters;
 import org.keycloak.playground.nodowntimeupgrade.infinispan.v3.ObjectV3TagMarshaller;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.v4.ObjectV4Marshaller;
 import org.keycloak.playground.nodowntimeupgrade.infinispan.v4.ObjectV4TagMarshaller;
 
-import static org.keycloak.playground.nodowntimeupgrade.infinispan.migration.Field.CLIENT_SCOPE_ID;
-import static org.keycloak.playground.nodowntimeupgrade.infinispan.migration.Field.NODE2;
 
 public class InfinispanVersionedStorage implements VersionedStorage {
 

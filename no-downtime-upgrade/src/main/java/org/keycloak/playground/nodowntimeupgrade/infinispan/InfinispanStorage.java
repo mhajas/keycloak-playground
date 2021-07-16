@@ -123,13 +123,7 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
 
     @Override
     public Stream<ModelType> read(ModelCriteriaBuilder criteria) {
-        QueryFactory queryFactory = Search.getQueryFactory(messageCache);
-
-        String query = "FROM nodowntimeupgrade.InfinispanObjectEntity c"
-                + " WHERE c.name LIKE '%000013%'"
-                + " order by c.id ASC";
-
-        return StreamSupport.stream(queryFactory.<EntityType>create(query).spliterator(), false).map(toModel);
+        return null;
     }
 
     @Override
