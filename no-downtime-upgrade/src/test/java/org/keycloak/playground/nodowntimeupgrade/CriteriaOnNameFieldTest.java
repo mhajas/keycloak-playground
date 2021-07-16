@@ -61,13 +61,6 @@ public class CriteriaOnNameFieldTest extends AbstractNoDowntimeUpgradeTest {
     }
 
     @Test
-    public void test() {
-        List<ObjectModel_V4> result = storageV4.read((ModelCriteriaBuilder) null).collect(Collectors.toList());
-
-        System.out.println(result);
-    }
-
-    @Test
     public void testFieldEquals() {
         Integer key = INITIAL_INDEX_FACTOR + 1;
 

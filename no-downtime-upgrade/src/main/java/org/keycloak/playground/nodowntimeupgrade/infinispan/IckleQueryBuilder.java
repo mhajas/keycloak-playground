@@ -3,6 +3,7 @@ package org.keycloak.playground.nodowntimeupgrade.infinispan;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuilder;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -20,7 +21,7 @@ public class IckleQueryBuilder implements ModelCriteriaBuilder {
         opToClauseMapping.put(Operator.GT, functionForOperator(">"));
         opToClauseMapping.put(Operator.GE, functionForOperator(">="));
         opToClauseMapping.put(Operator.LIKE, functionForOperator("LIKE"));
-        opToClauseMapping.put(Operator.ILIKE, functionForOperator("ILIKE"));
+        opToClauseMapping.put(Operator.ILIKE, (f, o) -> "max(" + C + "." + f + ") LIKE " + escapeIfNecesssary(o).toUpperCase()); // TODO:
     }
 
     private static String escapeIfNecesssary(Object o) {
@@ -43,61 +44,85 @@ public class IckleQueryBuilder implements ModelCriteriaBuilder {
         this.whereClauseBuilder.append(whereClauseBuilder);
     }
 
+    public IckleQueryBuilder() {
+    }
+
     @Override
     public ModelCriteriaBuilder compare(String modelField, Operator op, Object value) {
+        StringBuilder newBuilder = new StringBuilder(whereClauseBuilder);
+
         if (whereClauseBuilder.length() != 0) {
-            whereClauseBuilder.append(" AND");
+            newBuilder.append(" AND ");
         }
 
-        whereClauseBuilder.append(" ").append(opToClauseMapping.get(op).apply(modelField, value));
+        if (whereClauseBuilder.length() != 0) {
+            newBuilder.append("(");
+        }
+        newBuilder.append(opToClauseMapping.get(op).apply(modelField, value));
+        if (whereClauseBuilder.length() != 0) {
+            newBuilder.append(")");
+        }
 
-        return this;
+        return new IckleQueryBuilder(newBuilder.insert(0, "(").append(")"));
     }
 
     @Override
     public ModelCriteriaBuilder and(ModelCriteriaBuilder... builders) {
+        StringBuilder newBuilder = new StringBuilder();
+
         for (ModelCriteriaBuilder b : builders) {
             IckleQueryBuilder ickle = b.unwrap(IckleQueryBuilder.class);
 
-            if (whereClauseBuilder.length() != 0 && ickle.getWhereClauseBuilder().length() != 0) {
-                whereClauseBuilder.append(" AND");
+            if (newBuilder.length() != 0 && ickle.getWhereClauseBuilder().length() != 0) {
+                newBuilder.append(" AND ");
             }
 
             if (ickle.getWhereClauseBuilder().length() != 0) {
-                whereClauseBuilder.append(" (").append(ickle.getWhereClauseBuilder());
+                newBuilder.append(ickle.getWhereClauseBuilder());
             }
         }
 
-        return this;
+        return new IckleQueryBuilder(newBuilder.insert(0, " (").append(")"));
     }
 
     @Override
     public ModelCriteriaBuilder or(ModelCriteriaBuilder... builders) {
+        StringBuilder newBuilder = new StringBuilder();
+
         for (ModelCriteriaBuilder b : builders) {
             IckleQueryBuilder ickle = b.unwrap(IckleQueryBuilder.class);
 
-            if (whereClauseBuilder.length() != 0 && ickle.getWhereClauseBuilder().length() != 0) {
-                whereClauseBuilder.append(" OR");
+            if (newBuilder.length() != 0 && ickle.getWhereClauseBuilder().length() != 0) {
+                newBuilder.append(" OR ");
             }
 
             if (ickle.getWhereClauseBuilder().length() != 0) {
-                whereClauseBuilder.append(" (").append(ickle.getWhereClauseBuilder().append(")"));
+                newBuilder.append(ickle.getWhereClauseBuilder());
             }
         }
 
-        return this;
+        return new IckleQueryBuilder(newBuilder.insert(0, "(").append(")"));
     }
 
     @Override
     public ModelCriteriaBuilder not(ModelCriteriaBuilder builder) {
-        whereClauseBuilder.append(builder.unwrap(IckleQueryBuilder.class).getWhereClauseBuilder().insert(0, "!(").append(")"));
+        StringBuilder newBuilder = new StringBuilder();
+        StringBuilder originalBuilder = builder.unwrap(IckleQueryBuilder.class).getWhereClauseBuilder();
 
-        return this;
+        if (originalBuilder.length() != 0) {
+            newBuilder.append(originalBuilder).insert(0, "not");
+        }
+
+        return new IckleQueryBuilder(newBuilder);
     }
 
     @Override
     public <T extends ModelCriteriaBuilder> T unwrap(Class<T> clazz) {
-        return null;
+        if (clazz.isInstance(this)) {
+            return clazz.cast(this);
+        } else {
+            throw new ClassCastException("Incompatible class: " + clazz);
+        }
     }
 
     public StringBuilder getWhereClauseBuilder() {
@@ -105,7 +130,6 @@ public class IckleQueryBuilder implements ModelCriteriaBuilder {
     }
 
     public String getIckleQuery() {
-        return "FROM nodowntimeupgrade.InfinispanObjectEntity " + C +
-                " WHERE " + whereClauseBuilder;
+        return "FROM nodowntimeupgrade.InfinispanObjectEntity " + C + ((whereClauseBuilder.length() != 0) ? " WHERE " + whereClauseBuilder : "");
     }
 }

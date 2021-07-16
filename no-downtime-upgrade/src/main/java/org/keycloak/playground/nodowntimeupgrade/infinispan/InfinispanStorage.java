@@ -11,6 +11,7 @@ import org.infinispan.protostream.BaseMarshaller;
 import org.infinispan.protostream.FileDescriptorSource;
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.annotations.ProtoSchemaBuilder;
+import org.infinispan.query.dsl.Expression;
 import org.infinispan.query.dsl.QueryFactory;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 import org.keycloak.playground.nodowntimeupgrade.base.model.HasId;
@@ -47,8 +48,8 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
                 .username("Titus Bramble")
                 .password("Shambles")
                 .realm("default")
-                .clientIntelligence(ClientIntelligence.BASIC)
-                .marshaller(new ProtoStreamMarshaller()); // The Protobuf based marshaller is required for query capabilities
+                .clientIntelligence(ClientIntelligence.BASIC);
+                //.marshaller(new ProtoStreamMarshaller()); // The Protobuf based marshaller is required for query capabilities
 
         remoteCacheManager = new RemoteCacheManager(remoteBuilder.build());
 
@@ -118,12 +119,28 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
 
     @Override
     public ModelCriteriaBuilder getCriteriaBuilder() {
-        return null;
+        return new IckleQueryBuilder();
     }
+    //FROM nodowntimeupgrade.InfinispanObjectEntity c WHERE c.name = 'model1 # 000001'
+    // AND c.name = 'model1 # 000002'
+    // AND ( c.name = 'model1 # 000001'
+    //    AND c.name = 'model1 # 000002'
+    //    AND (
+    //       AND ( c.name = 'model1 # 000001'
+    //       AND c.name = 'model1 # 000002'
+    //          AND ( c.name = 'model1 # 000001'
+    //              AND c.name = 'model1 # 000002'
+    //              AND ( AND (
 
     @Override
     public Stream<ModelType> read(ModelCriteriaBuilder criteria) {
-        return null;
+        String query = criteria.unwrap(IckleQueryBuilder.class).getIckleQuery();
+
+        System.out.println(query);
+
+        QueryFactory queryFactory = Search.getQueryFactory(messageCache);
+        return StreamSupport.stream(queryFactory.<EntityType>create(query).spliterator(), false)
+                .map(toModel);
     }
 
     @Override

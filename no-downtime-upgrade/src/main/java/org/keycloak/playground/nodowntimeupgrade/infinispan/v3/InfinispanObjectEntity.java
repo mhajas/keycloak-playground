@@ -20,7 +20,7 @@ public class InfinispanObjectEntity implements HasId<String> {
     public String id;
 
     @ProtoField(number = 3)
-    @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
+    @ProtoDoc("@Field(index = Index.YES, store = Store.NO")
     public String name;
 
     @ProtoField(number = 4)
