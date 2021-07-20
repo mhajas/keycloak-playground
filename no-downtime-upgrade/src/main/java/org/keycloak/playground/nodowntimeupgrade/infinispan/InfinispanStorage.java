@@ -5,7 +5,10 @@ import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.Search;
 import org.infinispan.client.hotrod.configuration.ClientIntelligence;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
+import org.infinispan.client.hotrod.configuration.TransactionMode;
 import org.infinispan.client.hotrod.marshall.MarshallerUtil;
+import org.infinispan.client.hotrod.transaction.lookup.GenericTransactionManagerLookup;
+import org.infinispan.commons.configuration.XMLStringConfiguration;
 import org.infinispan.protostream.BaseMarshaller;
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.annotations.ProtoSchemaBuilder;
@@ -15,6 +18,7 @@ import org.keycloak.playground.nodowntimeupgrade.base.model.HasId;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuilder;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.Storage;
 
+import javax.transaction.TransactionManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -23,6 +27,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static org.keycloak.playground.nodowntimeupgrade.infinispan.InfinispanVersionedStorage.CACHE_NAME;
 
 public class InfinispanStorage<ModelType extends HasId<String>, EntityType> implements Storage<ModelType> {
 
@@ -43,15 +49,26 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
                 .username("Titus Bramble")
                 .password("Shambles")
                 .realm("default")
-                .clientIntelligence(ClientIntelligence.BASIC);
-                //.marshaller(new ProtoStreamMarshaller()); // The Protobuf based marshaller is required for query capabilities
+                .clientIntelligence(ClientIntelligence.BASIC)
+                .remoteCache(CACHE_NAME)
+                    .transactionManagerLookup(GenericTransactionManagerLookup.getInstance())
+                    .transactionMode(TransactionMode.NON_XA);
+
+        //.marshaller(new ProtoStreamMarshaller()); // The Protobuf based marshaller is required for query capabilities
 
         remoteCacheManager = new RemoteCacheManager(remoteBuilder.build());
 
-        messageCache = remoteCacheManager.administration().getOrCreateCache(InfinispanVersionedStorage.CACHE_NAME, "example.PROTOBUF_DIST");
+        String xml = String.format("<distributed-cache name=\"%s\" mode=\"SYNC\">" +
+                "<encoding media-type=\"application/x-protostream\"/>" +
+                "<locking isolation=\"REPEATABLE_READ\"/>" +
+                "<transaction mode=\"NON_XA\"/>" +
+                "<expiration lifespan=\"60000\" interval=\"20000\"/>" +
+                "</distributed-cache>" , CACHE_NAME);
+
+        messageCache = remoteCacheManager.administration().getOrCreateCache(CACHE_NAME, new XMLStringConfiguration(xml));
 
         if (messageCache == null) {
-            throw new RuntimeException("Cache '" + InfinispanVersionedStorage.CACHE_NAME + "' not found. Please make sure the server is properly configured");
+            throw new RuntimeException("Cache '" + CACHE_NAME + "' not found. Please make sure the server is properly configured");
         }
 
         this.entityClass = entityClass;
@@ -143,5 +160,21 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
     @Override
     public void write(ModelType object) {
         messageCache.put(object.getId(), toEntity.apply(object));
+    }
+
+    public ModelType readAndRegisterToTransaction(String id) {
+        EntityType entity = messageCache.get(id);
+
+        if (entity == null) {
+            return null;
+        }
+
+        messageCache.put(id, entity);
+
+        return toModel.apply(entity);
+    }
+
+    public TransactionManager getTransactionManager() {
+        return messageCache.getTransactionManager();
     }
 }

@@ -37,12 +37,8 @@ public class InfinispanObjectEntity implements HasId<String> {
     @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
     public int timeout = DEFAULT_V3_TIMEOUT;
 
-    public ObjectAdapter_V3 toModel() {
-        final ObjectAdapter_V3 res = new ObjectAdapter_V3(id);
-        res.setName(name);
-        res.setClientScopeId(clientScopeId);
-        res.setTimeout(timeout);
-        return res;
+    public ObjectModel_V3 toModel() {
+        return new InfinispanObjectAdapter_V3(this);
     }
 
     public static InfinispanObjectEntity fromModel(ObjectModel_V3 object) {
