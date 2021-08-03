@@ -27,15 +27,20 @@ public class InfinispanObjectEntity implements HasId<String> {
     @ProtoDoc("@Field(index = Index.YES, store = Store.NO")
     public String name;
 
-    @ProtoField(number = 4)
+    @ProtoField(number = 6)
     @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
     public String clientScopeId;
 
-    @ProtoField(number = 6)
+    @Deprecated // Remove in next version
+    @ProtoField(number = 7, defaultValue = "" + DEFAULT_V3_TIMEOUT)
+    @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
+    public int timeout = DEFAULT_V3_TIMEOUT;
+
+    @ProtoField(number = 8)
     @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
     public Integer timeout1;
 
-    @ProtoField(number = 7)
+    @ProtoField(number = 9)
     @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
     public Integer timeout2;
 

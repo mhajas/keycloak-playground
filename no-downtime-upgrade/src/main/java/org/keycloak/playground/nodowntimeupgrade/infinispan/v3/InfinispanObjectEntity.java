@@ -29,11 +29,11 @@ public class InfinispanObjectEntity implements HasId<String> {
      *      To get client scope ID from client template ID,
      *      the template ID needs to be prefixed by {@code "template-"}.
      */
-    @ProtoField(number = 4)
+    @ProtoField(number = 6)
     @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
     public String clientScopeId;
 
-    @ProtoField(number = 6, defaultValue = "" + DEFAULT_V3_TIMEOUT)
+    @ProtoField(number = 7, defaultValue = "" + DEFAULT_V3_TIMEOUT)
     @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
     public int timeout = DEFAULT_V3_TIMEOUT;
 

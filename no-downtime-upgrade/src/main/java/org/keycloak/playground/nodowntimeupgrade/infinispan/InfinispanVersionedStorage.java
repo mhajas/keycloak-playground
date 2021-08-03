@@ -1,15 +1,12 @@
 package org.keycloak.playground.nodowntimeupgrade.infinispan;
 
-import org.keycloak.playground.nodowntimeupgrade.base.model.ModelVersion;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.Storage;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.VersionedStorage;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.migration.MultiVersionMarshaller;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.Getters;
 import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.InfinispanObjectEntity;
-import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.Setters;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.v1.InfinispanObjectEntityTagMarshaller;
 
 public class InfinispanVersionedStorage implements VersionedStorage {
 
@@ -17,14 +14,9 @@ public class InfinispanVersionedStorage implements VersionedStorage {
 
     @Override
     public Storage<ObjectModel_V1> getStorageV1() {
-
         return new InfinispanStorage<>(
                 InfinispanObjectEntity.class,
-                new MultiVersionMarshaller<>(InfinispanObjectEntity.class,
-                        InfinispanObjectEntity::new,
-                        ModelVersion.VERSION_1,
-                        Setters.setters,
-                        Getters.getters),
+                new InfinispanObjectEntityTagMarshaller(),
                 InfinispanObjectEntity::fromModel,
                 InfinispanObjectEntity::toModel
                 );
@@ -34,13 +26,7 @@ public class InfinispanVersionedStorage implements VersionedStorage {
     public Storage<ObjectModel_V3> getStorageV3() {
         return new InfinispanStorage<>(
                 org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntity.class,
-                new MultiVersionMarshaller<>(
-                        org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntity.class,
-                        org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntity::new,
-                        ModelVersion.VERSION_3,
-                        org.keycloak.playground.nodowntimeupgrade.infinispan.v3.Setters.setters,
-                        org.keycloak.playground.nodowntimeupgrade.infinispan.v3.Getters.getters
-                ),
+                new org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntityTagMarshaller(),
                 org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntity::fromModel,
                 org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntity::toModel
         );
@@ -50,13 +36,7 @@ public class InfinispanVersionedStorage implements VersionedStorage {
     public Storage<ObjectModel_V4> getStorageV4() {
         return new InfinispanStorage<>(
                 org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity.class,
-                new MultiVersionMarshaller<>(
-                        org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity.class,
-                        org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity::new,
-                        ModelVersion.VERSION_4,
-                        org.keycloak.playground.nodowntimeupgrade.infinispan.v4.Setters.setters,
-                        org.keycloak.playground.nodowntimeupgrade.infinispan.v4.Getters.getters
-                ),
+                new org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntityTagMarshaller(),
                 org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity::fromModel,
                 org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity::toModel
         );

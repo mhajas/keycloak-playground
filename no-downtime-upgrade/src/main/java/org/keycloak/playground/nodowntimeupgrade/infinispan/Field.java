@@ -1,4 +1,4 @@
-package org.keycloak.playground.nodowntimeupgrade.infinispan.migration;
+package org.keycloak.playground.nodowntimeupgrade.infinispan;
 
 import org.infinispan.protostream.descriptors.WireType;
 
@@ -8,10 +8,13 @@ public enum Field {
     ENTITY_VERSION(1, WireType.WIRETYPE_VARINT),
     ID(2, WireType.WIRETYPE_LENGTH_DELIMITED),
     NAME(3, WireType.WIRETYPE_LENGTH_DELIMITED),
-    CLIENT_SCOPE_ID(4, WireType.WIRETYPE_LENGTH_DELIMITED),
+    CLIENT_TEMPLATE_ID(4, WireType.WIRETYPE_LENGTH_DELIMITED),
     NODE2(5, WireType.WIRETYPE_LENGTH_DELIMITED),
-    TIMEOUT1(6, WireType.WIRETYPE_VARINT),
-    TIMEOUT2(7, WireType.WIRETYPE_VARINT);
+    CLIENT_SCOPE_ID(6, WireType.WIRETYPE_LENGTH_DELIMITED),
+    TIMEOUT(7, WireType.WIRETYPE_VARINT),
+    TIMEOUT1(8, WireType.WIRETYPE_VARINT),
+    TIMEOUT2(9, WireType.WIRETYPE_VARINT)
+    ;
 
     private final int number;
     private final int tagIndex;

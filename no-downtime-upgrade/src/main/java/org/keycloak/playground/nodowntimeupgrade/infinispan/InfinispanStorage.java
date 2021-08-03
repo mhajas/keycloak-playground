@@ -19,8 +19,6 @@ import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuild
 import org.keycloak.playground.nodowntimeupgrade.base.storage.Storage;
 
 import javax.transaction.TransactionManager;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;

@@ -25,7 +25,7 @@ public interface ObjectModel_V3 extends HasId<String> {
 
     public class SearchableFields {
         public static final String NAME = "name";
-        public static final String TIMEOUT = "timeout1";
+        public static final String TIMEOUT = "timeout";
     }
 
     String getName();
