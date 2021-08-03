@@ -23,6 +23,11 @@ public class InfinispanObjectEntity implements HasId<String> {
     @ProtoDoc("@Field(index = Index.YES, store = Store.NO")
     public String name;
 
+    @Deprecated
+    @ProtoField(number = 4)
+    @ProtoDoc("@Field(index = Index.YES, store = Store.YES)")
+    public String clientTemplateId;
+
     /**
      * This field replaces previous field clientTemplateId
      *  Migration path is following:
@@ -30,7 +35,7 @@ public class InfinispanObjectEntity implements HasId<String> {
      *      the template ID needs to be prefixed by {@code "template-"}.
      */
     @ProtoField(number = 6)
-    @ProtoDoc("@Field(index = Index.NO, store = Store.NO)")
+    @ProtoDoc("@Field(index = Index.YES, store = Store.NO)")
     public String clientScopeId;
 
     @ProtoField(number = 7, defaultValue = "" + DEFAULT_V3_TIMEOUT)

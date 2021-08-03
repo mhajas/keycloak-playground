@@ -23,13 +23,9 @@ public class InfinispanObjectEntity implements HasId<String> {
     public String name;
 
     @ProtoField(number = 4)
-    @ProtoDoc("@Field(index = Index.NO, store = Store.YES)")
+    @ProtoDoc("@Field(index = Index.YES, store = Store.YES)")
     public String clientTemplateId;
 
-    /**
-     * @deprecated TODO: For backwards compatibility with version 1, remove in version 3
-     */
-    @Deprecated
     @ProtoField(number = 5)
     public String node2 = "";
 

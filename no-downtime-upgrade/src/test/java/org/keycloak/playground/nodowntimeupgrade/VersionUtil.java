@@ -29,6 +29,7 @@ public interface VersionUtil<M> {
         public static final int INITIAL_INDEX_FACTOR = 10000000;
 
         public static final int INITIAL_INDEX_V1 = ModelVersion.VERSION_1.getVersion() * INITIAL_INDEX_FACTOR;
+        public static final int INITIAL_INDEX_V2 = ModelVersion.VERSION_2.getVersion() * INITIAL_INDEX_FACTOR;
         public static final int INITIAL_INDEX_V3 = ModelVersion.VERSION_3.getVersion() * INITIAL_INDEX_FACTOR;
         public static final int INITIAL_INDEX_V4 = ModelVersion.VERSION_4.getVersion() * INITIAL_INDEX_FACTOR;
     }

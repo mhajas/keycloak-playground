@@ -21,6 +21,7 @@ import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V3.V3_UTIL;
 public class TestStorageWithTransactionManager extends AbstractNoDowntimeUpgradeTest {
 
     private static final int INITIAL_COUNT_V1 = 100;
+    private static final int INITIAL_COUNT_V2 = 0;
     private static final int INITIAL_COUNT_V3 = 200;
     private static final int INITIAL_COUNT_V4 = 300;
 
@@ -30,7 +31,7 @@ public class TestStorageWithTransactionManager extends AbstractNoDowntimeUpgrade
 
     @Before
     public void init() {
-        createInstances(INITIAL_COUNT_V1, INITIAL_COUNT_V3, INITIAL_COUNT_V4);
+        createInstances(INITIAL_COUNT_V1, INITIAL_COUNT_V2, INITIAL_COUNT_V3, INITIAL_COUNT_V4);
 
         if (storageV1 instanceof InfinispanStorage) {
             iStorageV1 = (InfinispanStorage<ObjectModel_V1, org.keycloak.playground.nodowntimeupgrade.infinispan.v1.InfinispanObjectEntity>) storageV1;

@@ -57,12 +57,6 @@ public class InfinispanObjectEntityTagMarshaller implements ProtobufTagMarshalle
             }
 
             switch (field) {
-                case ENTITY_VERSION:
-                    o.entityVersion = reader.readInt32();
-                    if (o.entityVersion > 2) {
-                        throw new IllegalArgumentException("Cannot read entity version > 2 with marshaller for version 1");
-                    }
-                    break;
                 case ID:
                     o.id = reader.readString();
                     break;

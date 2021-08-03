@@ -7,6 +7,7 @@ import org.keycloak.playground.nodowntimeupgrade.infinispan.Field;
 
 import java.io.IOException;
 
+import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V2.TEMPLATE_PREFIX;
 import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.CLIENT_SCOPE_ID;
 import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.ENTITY_VERSION;
 import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.ID;
@@ -64,7 +65,7 @@ public class InfinispanObjectEntityTagMarshaller implements ProtobufTagMarshalle
                     o.name = reader.readString();
                     break;
                 case CLIENT_TEMPLATE_ID:
-                    o.clientScopeId = "template-" + reader.readString(); // migration
+                    o.clientScopeId = TEMPLATE_PREFIX + reader.readString(); // migration
                     break;
                 case NODE2:
                     // Was removed, ignore

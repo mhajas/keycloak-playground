@@ -1,4 +1,4 @@
-package org.keycloak.playground.nodowntimeupgrade.infinispan.v4;
+package org.keycloak.playground.nodowntimeupgrade.infinispan.v2;
 
 import org.infinispan.protostream.ProtobufTagMarshaller;
 import org.infinispan.protostream.TagReader;
@@ -9,12 +9,11 @@ import java.io.IOException;
 
 import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V2.TEMPLATE_PREFIX;
 import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.CLIENT_SCOPE_ID;
+import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.CLIENT_TEMPLATE_ID;
 import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.ENTITY_VERSION;
 import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.ID;
 import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.NAME;
-import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.TIMEOUT;
-import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.TIMEOUT1;
-import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.TIMEOUT2;
+import static org.keycloak.playground.nodowntimeupgrade.infinispan.Field.NODE2;
 import static org.keycloak.playground.nodowntimeupgrade.infinispan.WriteUtils.writeField;
 
 
@@ -43,8 +42,8 @@ public class InfinispanObjectEntityTagMarshaller implements ProtobufTagMarshalle
         }
 
         o.entityVersion = reader.readInt32();
-        if (o.entityVersion > 5) {
-            throw new IllegalStateException("Cannot read entity version > 5 with marshaller for version 4");
+        if (o.entityVersion > 3) {
+            throw new IllegalStateException("Cannot read entity version > 3 with marshaller for version 2");
         }
 
         boolean end = false;
@@ -67,24 +66,13 @@ public class InfinispanObjectEntityTagMarshaller implements ProtobufTagMarshalle
                     o.name = reader.readString();
                     break;
                 case CLIENT_TEMPLATE_ID:
-                    o.clientScopeId = TEMPLATE_PREFIX + reader.readString(); // migration
+                    o.clientScopeId = TEMPLATE_PREFIX + reader.readString();
                     break;
                 case NODE2:
-                    // Was removed, ignore
-                    reader.skipField(field.getTagIndex());
+                    o.node2 = reader.readString();
                     break;
                 case CLIENT_SCOPE_ID:
                     o.clientScopeId = reader.readString();
-                    break;
-                case TIMEOUT:
-                    o.timeout1 = reader.readInt32(); // migration
-                    o.timeout2 = o.timeout1;
-                    break;
-                case TIMEOUT1:
-                    o.timeout1 = reader.readInt32();
-                    break;
-                case TIMEOUT2:
-                    o.timeout2 = reader.readInt32();
                     break;
                 default:
                     System.out.println("No reader for field: " + field);
@@ -100,12 +88,12 @@ public class InfinispanObjectEntityTagMarshaller implements ProtobufTagMarshalle
     @Override
     public void write(WriteContext ctx, InfinispanObjectEntity infinispanObjectEntity) throws IOException {
         TagWriter writer = ctx.getWriter();
+
         writeField(writer, ENTITY_VERSION, infinispanObjectEntity.entityVersion);
         writeField(writer, ID, infinispanObjectEntity.id);
         writeField(writer, NAME, infinispanObjectEntity.name);
+        writeField(writer, CLIENT_TEMPLATE_ID, infinispanObjectEntity.clientTemplateId);
+        writeField(writer, NODE2, infinispanObjectEntity.node2);
         writeField(writer, CLIENT_SCOPE_ID, infinispanObjectEntity.clientScopeId);
-        writeField(writer, TIMEOUT, infinispanObjectEntity.timeout1); // deprecated, remove in next version, to make entity readable for version 3
-        writeField(writer, TIMEOUT1, infinispanObjectEntity.timeout1);
-        writeField(writer, TIMEOUT2, infinispanObjectEntity.timeout2);
     }
 }

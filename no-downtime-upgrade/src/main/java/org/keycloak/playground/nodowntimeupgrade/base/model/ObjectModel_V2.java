@@ -25,11 +25,13 @@ package org.keycloak.playground.nodowntimeupgrade.base.model;
  * 
  * @author hmlnarik
  */
-public interface ObjectModel_V1 extends HasId<String> {
+public interface ObjectModel_V2 extends HasId<String> {
+
+    public static final String TEMPLATE_PREFIX = "template-";
 
     public class SearchableFields {
         public static final String NAME = "name";
-        public static final String CLIENT_TEMPLATE_ID = "clientTemplateId";
+        public static final String CLIENT_SCOPE_ID = "clientScopeId";
     }
 
     String getName();
@@ -44,6 +46,6 @@ public interface ObjectModel_V1 extends HasId<String> {
      * the template ID needs to be prefixed by {@code "template-"}.
      * @return
      */
-    String getClientTemplateId();
-    void setClientTemplateId(String clientTemplateId);
+    String getClientScopeId();
+    void setClientScopeId(String clientTemplateId);
 }

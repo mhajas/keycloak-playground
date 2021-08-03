@@ -8,9 +8,9 @@ import java.util.function.BiFunction;
 
 public class IckleQueryBuilder implements ModelCriteriaBuilder {
 
-    private static final String C = "c";
-    private final StringBuilder whereClauseBuilder = new StringBuilder();
-    private static final Map<Operator, BiFunction<String, Object, String>> opToClauseMapping = new HashMap<>();
+    protected static final String C = "c";
+    protected final StringBuilder whereClauseBuilder = new StringBuilder();
+    protected static final Map<Operator, BiFunction<String, Object, String>> opToClauseMapping = new HashMap<>();
 
     static {
         opToClauseMapping.put(Operator.EQ, functionForOperator("="));

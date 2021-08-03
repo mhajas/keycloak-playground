@@ -17,6 +17,8 @@ import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 import org.keycloak.playground.nodowntimeupgrade.base.model.HasId;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuilder;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.Storage;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.v2.IckleQueryBuilderV2;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.v2.InfinispanObjectEntity;
 
 import javax.transaction.TransactionManager;
 import java.util.HashSet;
@@ -126,6 +128,7 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
 
     @Override
     public ModelCriteriaBuilder getCriteriaBuilder() {
+        if (entityClass == InfinispanObjectEntity.class) return new IckleQueryBuilderV2();
         return new IckleQueryBuilder();
     }
 
