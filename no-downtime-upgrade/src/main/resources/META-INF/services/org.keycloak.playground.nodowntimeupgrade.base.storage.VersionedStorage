@@ -1,1 +1,2 @@
 org.keycloak.playground.nodowntimeupgrade.naive_jackson.NaiveJacksonStorage
+org.keycloak.playground.nodowntimeupgrade.infinispan.InfinispanVersionedStorage

@@ -34,6 +34,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.keycloak.playground.nodowntimeupgrade.infinispan.InfinispanVersionedStorage;
+import org.keycloak.playground.nodowntimeupgrade.naive_jackson.NaiveJacksonStorage;
+
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V1.V1_UTIL;
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V3.V3_UTIL;
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V4.V4_UTIL;
@@ -59,6 +62,8 @@ public abstract class AbstractNoDowntimeUpgradeTest {
 
     @Parameter(0)
     public VersionedStorage storage;
+    public boolean isNaive;
+    public boolean isInfinispan;
 
     @Parameter(1)
     public Object storageClassName;
@@ -86,6 +91,9 @@ public abstract class AbstractNoDowntimeUpgradeTest {
 
     @Before
     public void initStorage() {
+        isNaive = storage instanceof NaiveJacksonStorage;
+        isInfinispan = storage instanceof InfinispanVersionedStorage;
+
         storage.cleanup();
         storageV1 = storage.getStorageV1();
         storageV3 = storage.getStorageV3();

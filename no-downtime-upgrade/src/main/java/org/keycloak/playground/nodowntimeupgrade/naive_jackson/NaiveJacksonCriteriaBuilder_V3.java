@@ -18,6 +18,8 @@ package org.keycloak.playground.nodowntimeupgrade.naive_jackson;
 
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3;
 import java.util.Map;
+
+import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3.SearchableFields.CLIENT_SCOPE_ID;
 import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3.SearchableFields.NAME;
 import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3.SearchableFields.TIMEOUT;
 
@@ -31,6 +33,7 @@ public class NaiveJacksonCriteriaBuilder_V3 extends NaiveJacksonCriteriaBuilder<
     static {
         PREDICATES.put(NAME,    (o, op, value) -> o.fieldCompare(op, value, ObjectModel_V3::getName));
         PREDICATES.put(TIMEOUT, (o, op, value) -> o.fieldCompare(op, value, ObjectModel_V3::getTimeout));
+        PREDICATES.put(CLIENT_SCOPE_ID, (o, op, value) -> o.fieldCompare(op, value, ObjectModel_V3::getClientScopeId));
     }
 
     public NaiveJacksonCriteriaBuilder_V3() {

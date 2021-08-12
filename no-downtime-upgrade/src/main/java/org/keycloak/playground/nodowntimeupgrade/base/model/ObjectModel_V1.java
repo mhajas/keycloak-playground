@@ -29,6 +29,7 @@ public interface ObjectModel_V1 extends HasId<String> {
 
     public class SearchableFields {
         public static final String NAME = "name";
+        public static final String CLIENT_TEMPLATE_ID = "clientTemplateId";
     }
 
     String getName();

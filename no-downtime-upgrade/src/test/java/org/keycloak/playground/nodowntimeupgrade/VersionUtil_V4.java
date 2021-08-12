@@ -26,6 +26,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil.Constants.INITIAL_INDEX_FACTOR;
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil.Constants.INITIAL_INDEX_V4;
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V3.getTimeout;
+import static org.keycloak.playground.nodowntimeupgrade.base.model.Constants.DEFAULT_V3_TIMEOUT;
+import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3.TEMPLATE_PREFIX;
 
 /**
  *
@@ -57,17 +59,15 @@ public class VersionUtil_V4 implements VersionUtil<ObjectModel_V4> {
         assertThat(model.getName(), is(formatName(model.getId())));
         switch (originalModelVersion) {
             case 1:
-                assertThat(model.getClientScopeId(), is("template-" + "ct" + (originalModelIndex / 10)));
-                assertThat(model.getTimeout1(), is(nullValue()));
-                assertThat(model.getTimeout2(), is(nullValue()));
+                assertThat(model.getClientScopeId(), is(TEMPLATE_PREFIX + "ct" + (originalModelIndex / 10)));
+                assertThat(model.getTimeout1(), is(DEFAULT_V3_TIMEOUT));
+                assertThat(model.getTimeout2(), is(DEFAULT_V3_TIMEOUT));
                 break;
-
             case 3:
                 assertThat(model.getClientScopeId(), is("cs" + (originalModelIndex / 10)));
                 assertThat(model.getTimeout1(), is(getTimeout(Integer.valueOf(model.getId()))));
                 assertThat(model.getTimeout2(), is(getTimeout(Integer.valueOf(model.getId()))));
                 break;
-
             case 4:
                 assertThat(model.getClientScopeId(), is("cs" + (originalModelIndex / 30)));
                 assertThat(model.getTimeout1(),

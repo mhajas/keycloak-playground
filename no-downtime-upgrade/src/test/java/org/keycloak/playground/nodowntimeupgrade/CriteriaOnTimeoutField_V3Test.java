@@ -28,6 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -104,7 +106,7 @@ public class CriteriaOnTimeoutField_V3Test extends AbstractNoDowntimeUpgradeTest
         ));
         for (ObjectModel_V3 m : objects) {
             VersionUtil_V3.V3_UTIL.assertValid(m);
-            assertThat(m.getTimeout(), not(equals(timeout)));
+            assertThat(m.getTimeout(), not(equalTo(timeout)));
         }
         assertThat(objects.stream().map(HasId::getId).collect(Collectors.toSet()), not(contains(key)));
 

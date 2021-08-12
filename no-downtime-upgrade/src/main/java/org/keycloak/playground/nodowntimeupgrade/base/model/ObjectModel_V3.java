@@ -26,7 +26,11 @@ public interface ObjectModel_V3 extends HasId<String> {
     public class SearchableFields {
         public static final String NAME = "name";
         public static final String TIMEOUT = "timeout";
+        public static final String CLIENT_SCOPE_ID = "clientScopeId";
+
     }
+
+    String TEMPLATE_PREFIX = "template-";
 
     String getName();
     void setName(String name);

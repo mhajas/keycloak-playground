@@ -27,6 +27,7 @@ import static org.keycloak.playground.nodowntimeupgrade.VersionUtil.Constants.IN
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V4.formatName;
 import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V4.timeoutOnV4Set;
 import static org.keycloak.playground.nodowntimeupgrade.base.model.Constants.DEFAULT_V3_TIMEOUT;
+import static org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3.TEMPLATE_PREFIX;
 
 /**
  *
@@ -45,7 +46,7 @@ public class VersionUtil_V3 implements VersionUtil<ObjectModel_V3> {
         assertThat(model.getName(), is(formatName(model.getId())));
         switch (originalModelVersion) {
             case 1:
-                assertThat(model.getClientScopeId(), is("template-" + "ct" + (originalModelIndex / 10)));
+                assertThat(model.getClientScopeId(), is(TEMPLATE_PREFIX + "ct" + (originalModelIndex / 10)));
                 assertThat(model.getTimeout(), is(DEFAULT_V3_TIMEOUT));
                 break;
             case 3:

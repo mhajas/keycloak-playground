@@ -30,6 +30,7 @@ public interface ObjectModel_V4 extends HasId<String> {
         public static final String NAME = "name";
         public static final String TIMEOUT1 = "timeout1";
         public static final String TIMEOUT2 = "timeout2";
+        public static final String CLIENT_SCOPE_ID = "clientScopeId";
     }
 
     String getName();

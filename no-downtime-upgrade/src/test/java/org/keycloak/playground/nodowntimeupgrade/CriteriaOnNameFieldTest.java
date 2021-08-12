@@ -16,6 +16,7 @@
  */
 package org.keycloak.playground.nodowntimeupgrade;
 
+import org.junit.Assume;
 import org.keycloak.playground.nodowntimeupgrade.base.model.HasId;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
@@ -241,6 +242,8 @@ public class CriteriaOnNameFieldTest extends AbstractNoDowntimeUpgradeTest {
 
     @Test
     public void testFieldIlike() {
+        Assume.assumeFalse("ILIKE operation is not supported on infinispan", isInfinispan);
+
         ModelCriteriaBuilder cb = storageV4.getCriteriaBuilder()
           .compare(NAME, Operator.ILIKE, "odel%");
         assertThat(storageV4.read(cb).collect(Collectors.toList()), hasSize(0));
