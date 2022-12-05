@@ -132,4 +132,9 @@ public class CompatibilityTest extends AbstractNoDowntimeUpgradeTest {
         storageV1.read(key);    // This should fail now, the record would be updated to incompatible V4
     }
 
+    @Test
+    public void testRemoveWithNearCache() {
+        String key = storageV1.keys().iterator().next();
+        storageV1.delete(key);
+    }
 }

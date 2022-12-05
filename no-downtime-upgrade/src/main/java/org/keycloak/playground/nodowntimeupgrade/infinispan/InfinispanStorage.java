@@ -5,6 +5,8 @@ import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.Search;
 import org.infinispan.client.hotrod.configuration.ClientIntelligence;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
+import org.infinispan.client.hotrod.configuration.ExhaustedAction;
+import org.infinispan.client.hotrod.configuration.NearCacheMode;
 import org.infinispan.client.hotrod.configuration.TransactionMode;
 import org.infinispan.client.hotrod.marshall.MarshallerUtil;
 import org.infinispan.client.hotrod.transaction.lookup.GenericTransactionManagerLookup;
@@ -13,6 +15,7 @@ import org.infinispan.protostream.SerializationContext;
 import org.infinispan.protostream.annotations.ProtoSchemaBuilder;
 import org.infinispan.query.dsl.QueryFactory;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
+import org.jboss.logging.Logger;
 import org.keycloak.playground.nodowntimeupgrade.base.model.HasId;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.ModelCriteriaBuilder;
 import org.keycloak.playground.nodowntimeupgrade.base.storage.Storage;
@@ -41,27 +44,39 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
 
         ConfigurationBuilder remoteBuilder = new ConfigurationBuilder();
         remoteBuilder.addServer()
-                .host("localhost")
+                .host("127.0.0.1")
                 .port(11222)
                 .security()
                 .authentication()
-                .username("Titus Bramble")
-                .password("Shambles")
+                .username("admin")
+                .password("admin")
+
+
                 .realm("default")
                 .clientIntelligence(ClientIntelligence.BASIC)
+                .connectionPool()
+                .maxActive(1)
+                .exhaustedAction(ExhaustedAction.WAIT)
                 .remoteCache(CACHE_NAME)
-                    .transactionManagerLookup(GenericTransactionManagerLookup.getInstance())
-                    .transactionMode(TransactionMode.NON_XA);
+//                    .transactionManagerLookup(GenericTransactionManagerLookup.getInstance())
+//                    .transactionMode(TransactionMode.NON_XA)
+                .nearCacheMode(NearCacheMode.INVALIDATED)
+                .nearCacheMaxEntries(10000)
+                .nearCacheUseBloomFilter(true);
 
         //.marshaller(new ProtoStreamMarshaller()); // The Protobuf based marshaller is required for query capabilities
 
         remoteCacheManager = new RemoteCacheManager(remoteBuilder.build());
 
         String xml = String.format("<distributed-cache name=\"%s\" mode=\"SYNC\">" +
+                "<indexing>\n" +
+                        "        <indexed-entities>\n" +
+                        "            <indexed-entity>nodowntimeupgrade.InfinispanObjectEntity</indexed-entity>\n" +
+                        "        </indexed-entities>\n" +
+                        "    </indexing>" +
                 "<encoding media-type=\"application/x-protostream\"/>" +
                 "<locking isolation=\"REPEATABLE_READ\"/>" +
                 "<transaction mode=\"NON_XA\"/>" +
-                "<expiration lifespan=\"60000\" interval=\"20000\"/>" +
                 "</distributed-cache>" , CACHE_NAME);
 
         messageCache = remoteCacheManager.administration().getOrCreateCache(CACHE_NAME, new XMLStringConfiguration(xml));
@@ -72,7 +87,11 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
 
         this.entityClass = entityClass;
         registerSchemasAndMarshallers();
+
+        remoteCacheManager.administration().reindexCache(CACHE_NAME);
     }
+
+    private static final Logger LOG = Logger.getLogger(InfinispanStorage.class);
 
     /**
      * Register the Protobuf schemas and marshallers with the client and then register the schemas with the server too.
@@ -101,7 +120,16 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
         // check for definition error for the registered protobuf schemas
         String errors = protoMetadataCache.get(ProtobufMetadataManagerConstants.ERRORS_KEY_SUFFIX);
         if (errors != null) {
-            throw new IllegalStateException("Some Protobuf schema files contain errors: " + errors + "\nSchema :\n" + msgSchemaFile);
+            for (String errorFile : errors.split("\n")) {
+                LOG.infof("\nThere was an error in proto file: %s\n" +
+                                "Error message: %s\n" +
+                                "Current proto schema: %s",
+                        errorFile,
+                        protoMetadataCache.get(errorFile + ProtobufMetadataManagerConstants.ERRORS_KEY_SUFFIX),
+                        protoMetadataCache.get(errorFile));
+            }
+
+            throw new IllegalStateException("Some Protobuf schema files contain errors: " + errors);
         }
     }
 
@@ -172,5 +200,9 @@ public class InfinispanStorage<ModelType extends HasId<String>, EntityType> impl
 
     public TransactionManager getTransactionManager() {
         return messageCache.getTransactionManager();
+    }
+
+    public RemoteCache<String, EntityType> getMessageCache() {
+        return messageCache;
     }
 }

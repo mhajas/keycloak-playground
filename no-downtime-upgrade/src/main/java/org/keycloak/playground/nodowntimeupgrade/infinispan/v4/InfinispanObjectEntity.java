@@ -1,5 +1,6 @@
 package org.keycloak.playground.nodowntimeupgrade.infinispan.v4;
 
+import org.infinispan.api.annotations.indexing.Indexed;
 import org.infinispan.protostream.annotations.ProtoDoc;
 import org.infinispan.protostream.annotations.ProtoField;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ModelVersion;
@@ -8,10 +9,10 @@ import org.keycloak.playground.nodowntimeupgrade.infinispan.v4.migrations.Entity
 
 import static org.keycloak.playground.nodowntimeupgrade.base.model.Constants.DEFAULT_V3_TIMEOUT;
 
+@Indexed
 public class InfinispanObjectEntity implements ObjectEntity_V4 {
 
     @ProtoField(number = 1, required = true)
-    @ProtoDoc("@Field(index = Index.NO, store = Store.YES)")
     public int entityVersion = ModelVersion.VERSION_4.getVersion();
 
     @ProtoField(number = 2, required = true)

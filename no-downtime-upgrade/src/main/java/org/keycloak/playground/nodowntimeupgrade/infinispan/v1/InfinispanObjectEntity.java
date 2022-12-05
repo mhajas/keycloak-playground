@@ -1,15 +1,16 @@
 package org.keycloak.playground.nodowntimeupgrade.infinispan.v1;
 
+import org.infinispan.api.annotations.indexing.Indexed;
 import org.infinispan.protostream.annotations.ProtoDoc;
 import org.infinispan.protostream.annotations.ProtoField;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ModelVersion;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
 
 
+@Indexed
 public class InfinispanObjectEntity implements ObjectEntity_V1 {
 
     @ProtoField(number = 1, required = true)
-    @ProtoDoc("@Field(index = Index.NO, store = Store.YES)")
     public int entityVersion = ModelVersion.VERSION_1.getVersion();
 
     @ProtoField(number = 2, required = true)

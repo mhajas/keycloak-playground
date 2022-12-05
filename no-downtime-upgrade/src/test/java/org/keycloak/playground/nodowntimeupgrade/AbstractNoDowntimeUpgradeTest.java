@@ -58,7 +58,7 @@ public abstract class AbstractNoDowntimeUpgradeTest {
     protected Storage<ObjectModel_V3> storageV3;
     protected Storage<ObjectModel_V4> storageV4;
 
-    private static final Pattern STORAGE_CLASS_REGEX = Pattern.compile(System.getProperty("storageClassRegex", ".*"));
+    private static final Pattern STORAGE_CLASS_REGEX = Pattern.compile(System.getProperty("storageClassRegex", "InfinispanVersionedStorage"));
 
     @Parameter(0)
     public VersionedStorage storage;
@@ -72,7 +72,7 @@ public abstract class AbstractNoDowntimeUpgradeTest {
     public static Iterable<Object[]> versionedStorages() {
         ServiceLoader<VersionedStorage> loader = ServiceLoader.load(VersionedStorage.class);
         Iterator<VersionedStorage> it = loader.iterator();
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED), false)
+        return loader.stream().map(versionedStorageProvider -> versionedStorageProvider.get())
           .map(storage -> new Object[] { storage, storage.getClass().getCanonicalName() })
           .filter(o -> STORAGE_CLASS_REGEX.matcher((String) o[1]).find())
           .collect(Collectors.toList());
@@ -94,7 +94,7 @@ public abstract class AbstractNoDowntimeUpgradeTest {
         isNaive = storage instanceof NaiveJacksonStorage;
         isInfinispan = storage instanceof InfinispanVersionedStorage;
 
-        storage.cleanup();
+        //storage.cleanup();
         storageV1 = storage.getStorageV1();
         storageV3 = storage.getStorageV3();
         storageV4 = storage.getStorageV4();

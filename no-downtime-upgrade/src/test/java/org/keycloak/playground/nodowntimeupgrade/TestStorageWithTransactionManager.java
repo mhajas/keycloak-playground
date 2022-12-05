@@ -1,8 +1,12 @@
 package org.keycloak.playground.nodowntimeupgrade;
 
+import org.infinispan.client.hotrod.RemoteCache;
+import org.infinispan.client.hotrod.Search;
+import org.infinispan.query.dsl.QueryFactory;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.keycloak.common.util.Time;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V1;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V3;
 import org.keycloak.playground.nodowntimeupgrade.base.model.ObjectModel_V4;
@@ -10,6 +14,10 @@ import org.keycloak.playground.nodowntimeupgrade.infinispan.InfinispanStorage;
 import org.keycloak.playground.nodowntimeupgrade.infinispan.v3.InfinispanObjectEntity;
 
 import javax.transaction.TransactionManager;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -20,9 +28,9 @@ import static org.keycloak.playground.nodowntimeupgrade.VersionUtil_V3.V3_UTIL;
 
 public class TestStorageWithTransactionManager extends AbstractNoDowntimeUpgradeTest {
 
-    private static final int INITIAL_COUNT_V1 = 100;
-    private static final int INITIAL_COUNT_V3 = 200;
-    private static final int INITIAL_COUNT_V4 = 300;
+    private static final int INITIAL_COUNT_V1 = 1000000;
+    private static final int INITIAL_COUNT_V3 = 2000000;
+    private static final int INITIAL_COUNT_V4 = 3000000;
 
     InfinispanStorage<ObjectModel_V1, org.keycloak.playground.nodowntimeupgrade.infinispan.v1.InfinispanObjectEntity> iStorageV1;
     InfinispanStorage<ObjectModel_V3, InfinispanObjectEntity> iStorageV3;
@@ -111,6 +119,7 @@ public class TestStorageWithTransactionManager extends AbstractNoDowntimeUpgrade
     @Test
     public void testChangesInEntityAfterEnlistedInTransaction() throws Exception {
         TransactionManager transactionManager = iStorageV3.getTransactionManager();
+
         String id = String.valueOf(INITIAL_INDEX_V3 + 4);
 
         transactionManager.begin();
@@ -127,5 +136,20 @@ public class TestStorageWithTransactionManager extends AbstractNoDowntimeUpgrade
             ObjectModel_V4 read = iStorageV4.read(id);
             assertThat(read.getName(), is(equalTo("MyCustomName")));
         }
+    }
+
+    @Test
+    public void testEntityVersionHistogram() throws Exception {
+        RemoteCache<String, org.keycloak.playground.nodowntimeupgrade.infinispan.v4.InfinispanObjectEntity> messageCache = iStorageV4.getMessageCache();
+        System.out.println("CurrentSize: " + messageCache.size());
+
+        QueryFactory queryFactory = Search.getQueryFactory(messageCache);
+        long start = Time.currentTimeMillis();
+        List<Object> stream = StreamSupport.stream(queryFactory.
+                create("SELECT c.entityVersion, COUNT(entityVersion) FROM nodowntimeupgrade.InfinispanObjectEntity c GROUP BY c.entityVersion").spliterator(), false).collect(Collectors.toList());
+        long end = Time.currentTimeMillis();
+
+        System.out.println("Computed in time: " + (end - start));
+
     }
 }
